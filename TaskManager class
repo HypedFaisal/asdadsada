@@ -1,1 +1,50 @@
+package pack;
+import java.util.ArrayList;
+import java.util.Date;
 
+public class TaskManager {
+    private ArrayList<Task> taskList;
+
+    public TaskManager() {
+        taskList = new ArrayList<>();
+    }
+
+    // Add Task
+    public void addTask(String title, String description, String priority, Date dueDate) {
+        Task newTask = new Task(title, description, priority, dueDate);
+        taskList.add(newTask);
+    }
+
+    // Remove Task
+    public void removeTask(String title) {
+        Task taskToRemove = null;
+        for (Task task : taskList) {
+            if (task.getTitle().equalsIgnoreCase(title)) {
+                taskToRemove = task;
+                break;
+            }
+        }
+        if (taskToRemove != null) {
+            taskList.remove(taskToRemove);
+        } else {
+            System.out.println("Task not found!");
+        }
+    }
+
+    // Mark Task as Completed
+    public void completeTask(String title) {
+        for (Task task : taskList) {
+            if (task.getTitle().equalsIgnoreCase(title)) {
+                task.completeTask();
+                break;
+            }
+        }
+    }
+
+    // View All Tasks
+    public void viewTasks() {
+        for (Task task : taskList) {
+            System.out.println(task);
+        }
+    }
+}

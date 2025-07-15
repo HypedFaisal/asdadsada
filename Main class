@@ -1,0 +1,102 @@
+package pack;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.time.format.DateTimeFormatter;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        AuthenticationManager authManager = new AuthenticationManager();
+        TaskManager taskManager = new TaskManager();
+
+        System.out.println("Welcome to Task Management System!");
+
+        // Registration or Login
+        System.out.println("1. Register\n2. Login\nChoose option: ");
+        int option = scanner.nextInt();
+        scanner.nextLine();  // Consume newline character
+
+        User currentUser = null;
+
+        if (option == 1) {
+            System.out.print("Enter Username: ");
+            String username = scanner.nextLine();
+            System.out.print("Enter Password: ");
+            String password = scanner.nextLine();
+            boolean registered = authManager.register(username, password);
+            if (registered) {
+                currentUser = authManager.login(username, password);
+                System.out.println("Registration Successful!");
+            } else {
+                System.out.println("Username already exists!");
+            }
+        } else if (option == 2) {
+            System.out.print("Enter Username: ");
+            String username = scanner.nextLine();
+            System.out.print("Enter Password: ");
+            String password = scanner.nextLine();
+            currentUser = authManager.login(username, password);
+            if (currentUser != null) {
+                System.out.println("Login Successful!");
+            } else {
+                System.out.println("Invalid credentials!");
+                return;
+            }
+        }
+
+        // Task Management Menu
+        while (true) {
+            System.out.println("\nTask Management Menu");
+            System.out.println("1. Add Task");
+            System.out.println("2. Remove Task");
+            System.out.println("3. Complete Task");
+            System.out.println("4. View Tasks");
+            System.out.println("5. Logout");
+            System.out.print("Choose option: ");
+            int taskOption = scanner.nextInt();
+            scanner.nextLine();  // Consume newline character
+
+            switch (taskOption) {
+                case 1:
+                    System.out.print("Enter Task Title: ");
+                    String title = scanner.nextLine();
+                    System.out.print("Enter Task Description: ");
+                    String description = scanner.nextLine();
+                    System.out.print("Enter Task Priority (Low, Medium, High): ");
+                    String priority = scanner.nextLine();
+                    System.out.print("Enter Due Date (yyyy-MM-dd): ");
+                    String dueDateStr = scanner.nextLine();
+                    
+                    // Convert the String into LocalDate
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    LocalDate localDueDate = LocalDate.parse(dueDateStr, formatter);
+                    
+                    // Convert LocalDate to java.util.Date
+                    LocalDateTime localDateTime = localDueDate.atStartOfDay();  // Set the time to midnight
+                    Date dueDate = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+                    
+                    taskManager.addTask(title, description, priority, dueDate);
+                    break;
+                case 2:
+                    System.out.print("Enter Task Title to Remove: ");
+                    String removeTitle = scanner.nextLine();
+                    taskManager.removeTask(removeTitle);
+                    break;
+                case 3:
+                    System.out.print("Enter Task Title to Complete: ");
+                    String completeTitle = scanner.nextLine();
+                    taskManager.completeTask(completeTitle);
+                    break;
+                case 4:
+                    taskManager.viewTasks();
+                    break;
+                case 5:
+                    System.out.println("Logging out...");
+                    return;
+            }
+        }
+    }
+}
